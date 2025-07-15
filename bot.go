@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/FloatTech/ttl"
-	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
+	log "github.com/wdvxdr1123/ZeroBot/log"
 
 	"github.com/wdvxdr1123/ZeroBot/message"
 	"github.com/wdvxdr1123/ZeroBot/utils/helper"
@@ -78,7 +78,7 @@ func (op *Config) directlink(b []byte, c APICaller) {
 // Run 主函数初始化
 func Run(op *Config) {
 	if !atomic.CompareAndSwapUintptr(&isrunning, 0, 1) {
-		log.Warnln("[bot] 已忽略重复调用的 Run")
+		log.Warning("[bot] ignored duplicated Run")
 	}
 	runinit(op)
 	linkf := op.directlink
@@ -96,7 +96,7 @@ func Run(op *Config) {
 //	preblock 在所有 Driver 连接后，调用最后一个 Driver 的 Listen 阻塞前执行本函数
 func RunAndBlock(op *Config, preblock func()) {
 	if !atomic.CompareAndSwapUintptr(&isrunning, 0, 1) {
-		log.Warnln("[bot] 已忽略重复调用的 RunAndBlock")
+		log.Warning("[bot] ignored calling duplicated RunAndBlock")
 	}
 	runinit(op)
 	linkf := op.directlink
@@ -297,7 +297,7 @@ loop:
 							t.Reset(maxwait)
 							continue
 						}
-						log.Warnln("[bot] preHandler 处理达到最大时延, 退出")
+						log.Warning("[bot] timeout occured when handling preHandler stage, halt")
 						break loop
 					}
 					break
@@ -321,7 +321,7 @@ loop:
 						t.Reset(maxwait)
 						continue
 					}
-					log.Warnln("[bot] rule 处理达到最大时延, 退出")
+					log.Warning("[bot] timeout occured when handling rule stage, halt")
 					break loop
 				}
 				break
@@ -346,7 +346,7 @@ loop:
 							t.Reset(maxwait)
 							continue
 						}
-						log.Warnln("[bot] midHandler 处理达到最大时延, 退出")
+						log.Warning("[bot] timeout occured when handling midHandler stage, halt")
 						break loop
 					}
 					break
@@ -364,7 +364,7 @@ loop:
 						t.Reset(maxwait)
 						continue
 					}
-					log.Warnln("[bot] Handler 处理达到最大时延, 退出")
+					log.Warning("[bot] timeout occured when handling Handler stage, halt")
 					break loop
 				}
 				break
@@ -386,7 +386,7 @@ loop:
 							t.Reset(maxwait)
 							continue
 						}
-						log.Warnln("[bot] postHandler 处理达到最大时延, 退出")
+						log.Warning("[bot] timeout occured when handling postHandler stage, halt")
 						break loop
 					}
 					break
@@ -452,14 +452,14 @@ func preprocessMessageEvent(e *Event) {
 
 	switch {
 	case e.DetailType == "group":
-		log.Infof("[bot] 收到群(%v)消息 %v : %v", e.GroupID, e.Sender.String(), e.RawMessage)
+		log.Infof("[bot] received message from group (%v) %v : %v", e.GroupID, e.Sender.String(), e.RawMessage)
 		processAt()
 	case e.DetailType == "guild" && e.SubType == "channel":
-		log.Infof("[bot] 收到频道(%v)(%v-%v)消息 %v : %v", e.GroupID, e.GuildID, e.ChannelID, e.Sender.String(), e.Message)
+		log.Infof("[bot] received message from channel (%v)(%v-%v) %v : %v", e.GroupID, e.GuildID, e.ChannelID, e.Sender.String(), e.Message)
 		processAt()
 	default:
 		e.IsToMe = true // 私聊也判断为at
-		log.Infof("[bot] 收到私聊消息 %v : %v", e.Sender.String(), e.RawMessage)
+		log.Infof("[bot] received DM message from %v : %v", e.Sender.String(), e.RawMessage)
 	}
 	if len(e.Message) > 0 && e.Message[0].Type == "text" { // Trim Again!
 		e.Message[0].Data["text"] = strings.TrimLeft(e.Message[0].Data["text"], " ")

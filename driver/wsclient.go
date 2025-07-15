@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/RomiChan/websocket"
-	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
+	log "github.com/wdvxdr1123/ZeroBot/log"
 
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/utils/helper"
@@ -44,7 +44,7 @@ func NewWebSocketClient(url, accessToken string) *WSClient {
 
 // Connect 连接ws服务端
 func (ws *WSClient) Connect() {
-	log.Infof("[ws] 开始尝试连接到Websocket服务器: %v", ws.URL)
+	log.Infof("[ws] trying to connect websocket server: %v", ws.URL)
 	header := http.Header{
 		"X-Client-Role": []string{"Universal"},
 		"User-Agent":    []string{"ZeroBot/1.6.3"},
@@ -73,7 +73,7 @@ func (ws *WSClient) Connect() {
 	for {
 		conn, res, err := dialer.Dial(address, header)
 		if err != nil {
-			log.Warnf("[ws] 连接到Websocket服务器 %v 时出现错误: %v", ws.URL, err)
+			log.Warningf("[ws] failed to connect websocket server: %v error: %v", ws.URL, err)
 			time.Sleep(2 * time.Second) // 等待两秒后重新连接
 			continue
 		}
@@ -84,13 +84,13 @@ func (ws *WSClient) Connect() {
 		}
 		err = ws.conn.ReadJSON(&rsp)
 		if err != nil {
-			log.Warnf("[ws] 与Websocket服务器 %v 握手时出现错误: %v", ws.URL, err)
+			log.Warningf("[ws] failed to connect websocket server: %v with error when handshake : %v", ws.URL, err)
 			time.Sleep(2 * time.Second) // 等待两秒后重新连接
 			continue
 		}
 		ws.selfID = rsp.SelfID
 		zero.APICallers.Store(ws.selfID, ws) // 添加Caller到 APICaller list...
-		log.Infof("[ws] 连接Websocket服务器: %s 成功, 账号: %d", ws.URL, rsp.SelfID)
+		log.Infof("[ws] connected to websocket server: %s , QQ account : %d", ws.URL, rsp.SelfID)
 		break
 	}
 }
@@ -101,7 +101,7 @@ func (ws *WSClient) Listen(handler func([]byte, zero.APICaller)) {
 		t, payload, err := ws.conn.ReadMessage()
 		if err != nil { // reconnect
 			zero.APICallers.Delete(ws.selfID) // 断开从apicaller中删除
-			log.Warn("[ws] Websocket服务器连接断开...")
+			log.Warning("[ws] websocket server's connection closed...")
 			time.Sleep(time.Millisecond * time.Duration(3))
 			ws.Connect()
 			continue
@@ -111,7 +111,7 @@ func (ws *WSClient) Listen(handler func([]byte, zero.APICaller)) {
 		}
 		rsp := gjson.Parse(helper.BytesToString(payload))
 		if rsp.Get("echo").Exists() { // 存在echo字段，是api调用的返回
-			log.Debug("[ws] 接收到API调用返回: ", strings.TrimSpace(helper.BytesToString(payload)))
+			log.Debugf("[ws] received from api calling: %s", strings.TrimSpace(helper.BytesToString(payload)))
 			if c, ok := ws.seqMap.LoadAndDelete(rsp.Get("echo").Uint()); ok {
 				msg := rsp.Get("message").Str
 				if msg == "" {
@@ -132,7 +132,7 @@ func (ws *WSClient) Listen(handler func([]byte, zero.APICaller)) {
 		if rsp.Get("meta_event_type").Str == "heartbeat" { // 忽略心跳事件
 			continue
 		}
-		log.Debug("[ws] 接收到事件: ", helper.BytesToString(payload))
+		log.Debugf("[ws] recevied event : %s", helper.BytesToString(payload))
 		handler(payload, ws)
 	}
 }
@@ -152,10 +152,10 @@ func (ws *WSClient) CallAPI(req zero.APIRequest) (zero.APIResponse, error) {
 	err := ws.conn.WriteJSON(&req)
 	ws.mu.Unlock()
 	if err != nil {
-		log.Warn("[ws] 向WebsocketServer发送API请求失败: ", err.Error())
+		log.Warningf("[ws] failed to send api call to websocket server: %s", err.Error())
 		return nullResponse, err
 	}
-	log.Debug("[ws] 向服务器发送请求: ", &req)
+	log.Debugf("[ws] sending request to server : %v", &req)
 
 	select { // 等待数据返回
 	case rsp, ok := <-ch:

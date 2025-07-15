@@ -11,8 +11,8 @@ import (
 	"regexp"
 	"strconv"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
+	"github.com/wdvxdr1123/ZeroBot/log"
 
 	"github.com/wdvxdr1123/ZeroBot/message"
 	"github.com/wdvxdr1123/ZeroBot/utils/helper"
@@ -57,10 +57,10 @@ func (ctx *Ctx) CallAction(action string, params Params) APIResponse {
 	}
 	rsp, err := ctx.caller.CallAPI(req)
 	if err != nil {
-		log.Errorln("[api] 调用", action, "时出现错误: ", err)
+		log.Errorf("[api] calling action failed, action type : %s error : %v", action, err)
 	}
 	if err == nil && rsp.RetCode != 0 {
-		log.Errorln("[api] 调用", action, "时出现错误, 返回值:", rsp.RetCode, ", 信息:", rsp.Message, "解释:", rsp.Wording)
+		log.Errorf("[api] calling action failed, action type : %s return value : %v message : %s information : %s", action, rsp.RetCode, rsp.Message, rsp.Wording)
 	}
 	return rsp
 }
@@ -73,7 +73,7 @@ func (ctx *Ctx) SendGroupMessage(groupID int64, message interface{}) int64 {
 		"message":  message,
 	}).Data.Get("message_id")
 	if rsp.Exists() {
-		log.Infof("[api] 发送群消息(%v): %v (id=%v)", groupID, formatMessage(message), rsp.Int())
+		log.Infof("[api] sending group message (%v): %v (id=%v)", groupID, formatMessage(message), rsp.Int())
 		return rsp.Int()
 	}
 	return 0 // 无法获取返回值
@@ -87,7 +87,7 @@ func (ctx *Ctx) SendPrivateMessage(userID int64, message interface{}) int64 {
 		"message": message,
 	}).Data.Get("message_id")
 	if rsp.Exists() {
-		log.Infof("[api] 发送私聊消息(%v): %v (id=%v)", userID, formatMessage(message), rsp.Int())
+		log.Infof("[api] sending DM message (%v): %v (id=%v)", userID, formatMessage(message), rsp.Int())
 		return rsp.Int()
 	}
 	return 0 // 无法获取返回值
@@ -616,7 +616,7 @@ func (ctx *Ctx) SendGuildChannelMessage(guildID, channelID string, message inter
 		"message":    message,
 	}).Data.Get("message_id")
 	if rsp.Exists() {
-		log.Infof("[api] 发送频道消息(%v-%v): %v (id=%v)", guildID, channelID, formatMessage(message), rsp.Int())
+		log.Infof("[api] sending QQ Channal's message (%v-%v): %v (id=%v)", guildID, channelID, formatMessage(message), rsp.Int())
 		return rsp.String()
 	}
 	return "0" // 无法获取返回值

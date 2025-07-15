@@ -2,9 +2,9 @@
 package kv
 
 import (
-	log "github.com/sirupsen/logrus"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/util"
+	log "github.com/wdvxdr1123/ZeroBot/log"
 )
 
 var db *leveldb.DB

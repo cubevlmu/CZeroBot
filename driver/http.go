@@ -14,8 +14,8 @@ import (
 	"net/url"
 	"time"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
+	log "github.com/wdvxdr1123/ZeroBot/log"
 
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/utils/helper"
@@ -69,30 +69,30 @@ func (h *HTTP) listen() {
 
 	listener, err := net.Listen(network, address)
 	if err != nil {
-		log.Warningf("[httpserver] 服务器监听失败: %v", err)
+		log.Warningf("[httpsever] server failed to listen at port: %v", err)
 		h.lst = nil
 		return
 	}
 
 	h.lst = listener
-	log.Infof("[httpserver] 服务器开始监听: %v", listener.Addr())
+	log.Infof("[httpsever] server listening at port %v", listener.Addr())
 }
 
 // any 处理所有 API 请求
 func (h *HTTP) any(w http.ResponseWriter, r *http.Request, apiHandler func([]byte, zero.APICaller)) {
 	if r.Method != http.MethodPost {
-		log.Warningf("[httpserver] 已拒绝 %s 请求: 不支持的请求方法 %s", r.RemoteAddr, r.Method)
+		log.Warningf("[httpserver] refused request from %s : invalid request method %s", r.RemoteAddr, r.Method)
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 	if r.Header.Get("Content-Type") != "application/json" {
-		log.Warningf("[httpserver] 已拒绝 %s 请求: 不支持的 Content-Type %s", r.RemoteAddr, r.Header.Get("Content-Type"))
+		log.Warningf("[httpserver] refused request from %s : invalid Content-Type %s", r.RemoteAddr, r.Header.Get("Content-Type"))
 		w.WriteHeader(http.StatusNotAcceptable)
 		return
 	}
 	content, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Warningf("[httpserver] 已拒绝 %s 请求: 读取请求体失败: %s", r.RemoteAddr, err)
+		log.Warningf("[httpserver] refused request from %s : failed to read request body %s", r.RemoteAddr, err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -100,7 +100,7 @@ func (h *HTTP) any(w http.ResponseWriter, r *http.Request, apiHandler func([]byt
 	if h.AccessToken != "" {
 		signatureHeader := r.Header.Get("X-Signature")
 		if signatureHeader == "" {
-			log.Warningf("[httpserver] 已拒绝 %s 请求: 缺少签名", r.RemoteAddr)
+			log.Warningf("[httpserver] refused request from %s : no signature in request", r.RemoteAddr)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -108,7 +108,7 @@ func (h *HTTP) any(w http.ResponseWriter, r *http.Request, apiHandler func([]byt
 		mac := hmac.New(sha1.New, helper.StringToBytes(h.AccessToken))
 		mac.Write(content)
 		if signatureHeader != "sha1="+hex.EncodeToString(mac.Sum(nil)) {
-			log.Warningf("[httpserver] 已拒绝 %s 请求: 签名错误", r.RemoteAddr)
+			log.Warningf("[httpserver] refused request from %s : invalid signature", r.RemoteAddr)
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
@@ -134,13 +134,13 @@ func (h *HTTP) Listen(handler func([]byte, zero.APICaller)) {
 			h.listen()
 			continue
 		}
-		log.Infof("[httpserver] 服务器开始处理: %v", h.lst.Addr())
+		log.Infof("[httpserver] server start handling at : %v", h.lst.Addr())
 		err := server.Serve(h.lst)
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Warningf("[httpserver] 服务器在端点 %s 失败: %s", h.lst.Addr(), err)
 			h.lst = nil
 		} else if errors.Is(err, http.ErrServerClosed) {
-			log.Info("[httpserver] 服务器已关闭")
+			log.Info("[httpserver] server closed")
 			return
 		}
 	}
@@ -188,7 +188,7 @@ func (c *HTTPCaller) CallAPI(request zero.APIRequest) (zero.APIResponse, error) 
 	}
 	payload := helper.BytesToString(content)
 	if resp.StatusCode != http.StatusOK {
-		return zero.APIResponse{Status: payload, RetCode: int64(1000 + resp.StatusCode)}, fmt.Errorf("caller返回错误: %d", resp.StatusCode)
+		return zero.APIResponse{Status: payload, RetCode: int64(1000 + resp.StatusCode)}, fmt.Errorf("caller returned invalid data : %d", resp.StatusCode)
 	}
 	rsp := gjson.Parse(payload)
 	msg := rsp.Get("message").Str

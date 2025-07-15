@@ -14,8 +14,8 @@ import (
 	"unsafe"
 
 	"github.com/RomiChan/websocket"
-	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
+	log "github.com/wdvxdr1123/ZeroBot/log"
 
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/utils/helper"
@@ -79,13 +79,13 @@ func (wss *WSServer) Connect() {
 
 	listener, err := net.Listen(network, address)
 	if err != nil {
-		log.Warn("[wss] Websocket服务器监听失败:", err)
+		log.Warningf("[wss] failed to listen at (WS_Server): %v", err)
 		wss.lstn = nil
 		return
 	}
 
 	wss.lstn = listener
-	log.Infoln("[wss] Websocket服务器开始监听:", listener.Addr())
+	log.Infof("[wss] websocket server listening at port: %s", listener.Addr())
 }
 
 func checkAuth(req *http.Request, token string) int {
@@ -116,14 +116,14 @@ func checkAuth(req *http.Request, token string) int {
 func (wss *WSServer) any(w http.ResponseWriter, r *http.Request) {
 	status := checkAuth(r, wss.AccessToken)
 	if status != http.StatusOK {
-		log.Warnf("[wss] 已拒绝 %v 的 WebSocket 请求: Token鉴权失败(code:%d)", r.RemoteAddr, status)
+		log.Warningf("[wss] refused websocket connection of %v : invalid token (code:%d)", r.RemoteAddr, status)
 		w.WriteHeader(status)
 		return
 	}
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Warnf("[wss] 处理 WebSocket 请求时出现错误: %v", err)
+		log.Warningf("[wss] error occured when handling webSocket request: %v", err)
 		return
 	}
 
@@ -132,7 +132,7 @@ func (wss *WSServer) any(w http.ResponseWriter, r *http.Request) {
 	}
 	err = conn.ReadJSON(&rsp)
 	if err != nil {
-		log.Warnf("[wss] 与Websocket服务器 %v 握手时出现错误: %v", wss.URL, err)
+		log.Warningf("[wss] handshake with websocket server %v failed: %v", wss.URL, err)
 		return
 	}
 
@@ -141,7 +141,7 @@ func (wss *WSServer) any(w http.ResponseWriter, r *http.Request) {
 		selfID: rsp.SelfID,
 	}
 	zero.APICallers.Store(rsp.SelfID, c) // 添加Caller到 APICaller list...
-	log.Infof("[wss] 连接Websocket服务器: %s 成功, 账号: %d", wss.URL, rsp.SelfID)
+	log.Infof("[wss] connected to websocket server: %s QQ account : %d", wss.URL, rsp.SelfID)
 	wss.caller <- c
 }
 
@@ -156,10 +156,10 @@ func (wss *WSServer) Listen(handler func([]byte, zero.APICaller)) {
 				wss.Connect()
 				continue
 			}
-			log.Infof("[wss] WebSocket 服务器开始处理: %v", wss.lstn.Addr())
+			log.Infof("[wss] webSocket server handling : %v", wss.lstn.Addr())
 			err := http.Serve(wss.lstn, &mux)
 			if err != nil {
-				log.Warn("[wss] Websocket服务器在端点", wss.lstn.Addr(), "失败:", err)
+				log.Warningf("[wss] websocket server occured an error at end point : %s with error : %v", wss.lstn.Addr(), err)
 				wss.lstn = nil
 			}
 		}
@@ -174,7 +174,7 @@ func (wssc *WSSCaller) listen(handler func([]byte, zero.APICaller)) {
 		t, payload, err := wssc.conn.ReadMessage()
 		if err != nil { // reconnect
 			zero.APICallers.Delete(wssc.selfID) // 断开从apicaller中删除
-			log.Warnln("[wss] Websocket服务器连接断开, 账号:", wssc.selfID)
+			log.Warningf("[wss] disconnected from websocket server, QQ account : %v", wssc.selfID)
 			return
 		}
 		if t != websocket.TextMessage {
@@ -182,7 +182,7 @@ func (wssc *WSSCaller) listen(handler func([]byte, zero.APICaller)) {
 		}
 		rsp := gjson.Parse(helper.BytesToString(payload))
 		if rsp.Get("echo").Exists() { // 存在echo字段，是api调用的返回
-			log.Debug("[wss] 接收到API调用返回: ", strings.TrimSpace(helper.BytesToString(payload)))
+			log.Debugf("[wss] received from api calling : %v", strings.TrimSpace(helper.BytesToString(payload)))
 			if c, ok := wssc.seqMap.LoadAndDelete(rsp.Get("echo").Uint()); ok {
 				msg := rsp.Get("message").Str
 				if msg == "" {
@@ -203,7 +203,7 @@ func (wssc *WSSCaller) listen(handler func([]byte, zero.APICaller)) {
 		if rsp.Get("meta_event_type").Str == "heartbeat" { // 忽略心跳事件
 			continue
 		}
-		log.Debug("[wss] 接收到事件: ", helper.BytesToString(payload))
+		log.Debugf("[wss] received event : %v", helper.BytesToString(payload))
 		handler(payload, wssc)
 	}
 }
@@ -223,10 +223,10 @@ func (wssc *WSSCaller) CallAPI(req zero.APIRequest) (zero.APIResponse, error) {
 	err := wssc.conn.WriteJSON(&req)
 	wssc.mu.Unlock()
 	if err != nil {
-		log.Warn("[wss] 向WebsocketServer发送API请求失败: ", err.Error())
+		log.Warningf("[wss] failed to send api request to websocket server: %v", err.Error())
 		return nullResponse, err
 	}
-	log.Debug("[wss] 向服务器发送请求: ", &req)
+	log.Debugf("[wss] sending api request to server: %v", &req)
 
 	select { // 等待数据返回
 	case rsp, ok := <-ch:
