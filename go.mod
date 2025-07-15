@@ -1,4 +1,4 @@
-module github.com/wdvxdr1123/ZeroBot
+module github.com/cubevlmu/CZeroBot
 
 go 1.20
 

@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	zero "github.com/wdvxdr1123/ZeroBot"
-	"github.com/wdvxdr1123/ZeroBot/example/manager"
-	"github.com/wdvxdr1123/ZeroBot/extension"
-	"github.com/wdvxdr1123/ZeroBot/extension/rate"
-	"github.com/wdvxdr1123/ZeroBot/extension/single"
-	"github.com/wdvxdr1123/ZeroBot/message"
+	zero "github.com/cubevlmu/CZeroBot"
+	"github.com/cubevlmu/CZeroBot/example/manager"
+	"github.com/cubevlmu/CZeroBot/extension"
+	"github.com/cubevlmu/CZeroBot/extension/rate"
+	"github.com/cubevlmu/CZeroBot/extension/single"
+	"github.com/cubevlmu/CZeroBot/message"
 )
 
 var (

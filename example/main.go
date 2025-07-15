@@ -1,20 +1,16 @@
 package main
 
 import (
-	"flag"
-	"github.com/wdvxdr1123/ZeroBot/extension/shell"
-	"github.com/wdvxdr1123/ZeroBot/message"
-
 	//log "github.com/sirupsen/logrus"
 	easy "github.com/t-tomalak/logrus-easy-formatter"
 
+	zero "github.com/cubevlmu/CZeroBot"
+	"github.com/cubevlmu/CZeroBot/driver"
+	_ "github.com/cubevlmu/CZeroBot/example/command"
+	_ "github.com/cubevlmu/CZeroBot/example/music"
+	_ "github.com/cubevlmu/CZeroBot/example/napcat"
+	_ "github.com/cubevlmu/CZeroBot/example/repeat"
 	log "github.com/sirupsen/logrus"
-	zero "github.com/wdvxdr1123/ZeroBot"
-	"github.com/wdvxdr1123/ZeroBot/driver"
-	_ "github.com/wdvxdr1123/ZeroBot/example/command"
-	_ "github.com/wdvxdr1123/ZeroBot/example/music"
-	_ "github.com/wdvxdr1123/ZeroBot/example/napcat"
-	_ "github.com/wdvxdr1123/ZeroBot/example/repeat"
 )
 
 func init() {
@@ -26,25 +22,6 @@ func init() {
 }
 
 func main() {
-	zero.OnCommand("github").Handle(func(ctx *zero.Ctx) {
-		fset := flag.FlagSet{}
-		var (
-			owner string
-			repo  string
-		)
-		fset.StringVar(&owner, "o", "wdvxdr1123", "")
-		fset.StringVar(&repo, "r", "ZeroBot", "")
-		arguments := shell.Parse(ctx.State["args"].(string))
-		err := fset.Parse(arguments)
-		if err != nil {
-			return
-		}
-		ctx.Send(message.Text("github\n" +
-			"owner: " + owner + "\n" +
-			"repo: " + repo,
-		))
-	})
-	
 	zero.RunAndBlock(&zero.Config{
 		NickName:      []string{"bot"},
 		CommandPrefix: "/",

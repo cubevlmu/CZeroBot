@@ -1,7 +1,7 @@
 package repeat
 
 import (
-	zero "github.com/wdvxdr1123/ZeroBot"
+	zero "github.com/cubevlmu/CZeroBot"
 )
 
 func init() { // 插件主体

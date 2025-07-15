@@ -11,11 +11,11 @@ import (
 	"time"
 
 	"github.com/FloatTech/ttl"
+	log "github.com/cubevlmu/CZeroBot/log"
 	"github.com/tidwall/gjson"
-	log "github.com/wdvxdr1123/ZeroBot/log"
 
-	"github.com/wdvxdr1123/ZeroBot/message"
-	"github.com/wdvxdr1123/ZeroBot/utils/helper"
+	"github.com/cubevlmu/CZeroBot/message"
+	"github.com/cubevlmu/CZeroBot/utils/helper"
 )
 
 // Config is config of zero bot

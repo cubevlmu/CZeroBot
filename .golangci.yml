@@ -4,7 +4,7 @@ linters-settings:
     ignoretests: true
 
   goimports:
-    local-prefixes: github.com/wdvxdr1123/ZeroBot
+    local-prefixes: github.com/cubevlmu/CZeroBot
 
 linters:
   # please, do not use `enable-all`: it's deprecated and will be removed soon.

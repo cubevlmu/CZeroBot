@@ -1,7 +1,7 @@
 # ZeroBot
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/wdvxdr1123/ZeroBot)](https://goreportcard.com/report/github.com/wdvxdr1123/ZeroBot)
-![golangci-lint](https://github.com/wdvxdr1123/ZeroBot/workflows/golang-ci/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/cubevlmu/CZeroBot)](https://goreportcard.com/report/github.com/cubevlmu/CZeroBot)
+![golangci-lint](https://github.com/cubevlmu/CZeroBot/workflows/golang-ci/badge.svg)
 ![Badge](https://img.shields.io/badge/OneBot-v11-black)
 ![Badge](https://img.shields.io/badge/gocqhttp-v1.0.0-black)
 [![License](https://img.shields.io/github/license/wdvxdr1123/ZeroBot.svg?style=flat-square&logo=gnu)](https://raw.githubusercontent.com/wdvxdr1123/ZeroBot/main/LICENSE)
@@ -15,8 +15,8 @@ Modified version of original ZeroBot library
 package main
 
 import (
-	zero "github.com/wdvxdr1123/ZeroBot"
-	"github.com/wdvxdr1123/ZeroBot/driver"
+	zero "github.com/cubevlmu/CZeroBot"
+	"github.com/cubevlmu/CZeroBot/driver"
 )
 
 func main() {
@@ -60,6 +60,6 @@ func main() {
 
 同时感谢以下开发者对 ZeroBot 作出的贡献：
 
-<a href="https://github.com/wdvxdr1123/ZeroBot/graphs/contributors">
+<a href="https://github.com/cubevlmu/CZeroBot/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=wdvxdr1123/ZeroBot&max=1000" />
 </a>

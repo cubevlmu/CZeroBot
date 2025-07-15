@@ -1,6 +1,6 @@
 package extension
 
-import zero "github.com/wdvxdr1123/ZeroBot"
+import zero "github.com/cubevlmu/CZeroBot"
 
 // PrefixModel is model of zero.PrefixRule
 type PrefixModel struct {

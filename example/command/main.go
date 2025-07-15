@@ -3,9 +3,9 @@ package command
 import (
 	"flag"
 
-	zero "github.com/wdvxdr1123/ZeroBot"
-	"github.com/wdvxdr1123/ZeroBot/extension/shell"
-	"github.com/wdvxdr1123/ZeroBot/message"
+	zero "github.com/cubevlmu/CZeroBot"
+	"github.com/cubevlmu/CZeroBot/extension/shell"
+	"github.com/cubevlmu/CZeroBot/message"
 )
 
 func init() {

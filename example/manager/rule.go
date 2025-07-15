@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"sync"
 
-	zero "github.com/wdvxdr1123/ZeroBot"
-	"github.com/wdvxdr1123/ZeroBot/extension"
-	"github.com/wdvxdr1123/ZeroBot/extension/kv"
-	"github.com/wdvxdr1123/ZeroBot/message"
+	zero "github.com/cubevlmu/CZeroBot"
+	"github.com/cubevlmu/CZeroBot/extension"
+	"github.com/cubevlmu/CZeroBot/extension/kv"
+	"github.com/cubevlmu/CZeroBot/message"
 )
 
 var (

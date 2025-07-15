@@ -11,11 +11,11 @@ import (
 	"regexp"
 	"strconv"
 
+	"github.com/cubevlmu/CZeroBot/log"
 	"github.com/tidwall/gjson"
-	"github.com/wdvxdr1123/ZeroBot/log"
 
-	"github.com/wdvxdr1123/ZeroBot/message"
-	"github.com/wdvxdr1123/ZeroBot/utils/helper"
+	"github.com/cubevlmu/CZeroBot/message"
+	"github.com/cubevlmu/CZeroBot/utils/helper"
 )
 
 var base64Reg = regexp.MustCompile(`"type":"image","data":\{"file":"base64://[\w/\+=]+`)

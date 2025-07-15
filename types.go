@@ -6,7 +6,7 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/wdvxdr1123/ZeroBot/message"
+	"github.com/cubevlmu/CZeroBot/message"
 )
 
 // Modified from https://github.com/catsworld/qq-bot-api

@@ -12,11 +12,11 @@ import (
 	"time"
 
 	"github.com/RomiChan/websocket"
+	log "github.com/cubevlmu/CZeroBot/log"
 	"github.com/tidwall/gjson"
-	log "github.com/wdvxdr1123/ZeroBot/log"
 
-	zero "github.com/wdvxdr1123/ZeroBot"
-	"github.com/wdvxdr1123/ZeroBot/utils/helper"
+	zero "github.com/cubevlmu/CZeroBot"
+	"github.com/cubevlmu/CZeroBot/utils/helper"
 )
 
 var (
