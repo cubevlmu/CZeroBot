@@ -6,8 +6,6 @@ import (
 
 	zero "github.com/cubevlmu/CZeroBot"
 	"github.com/cubevlmu/CZeroBot/driver"
-	_ "github.com/cubevlmu/CZeroBot/example/command"
-	_ "github.com/cubevlmu/CZeroBot/example/music"
 	_ "github.com/cubevlmu/CZeroBot/example/napcat"
 	_ "github.com/cubevlmu/CZeroBot/example/repeat"
 	log "github.com/sirupsen/logrus"

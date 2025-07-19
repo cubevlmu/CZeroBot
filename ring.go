@@ -13,7 +13,7 @@ type eventRing struct {
 	c uintptr
 	r []*eventRingItem
 	i uintptr
-	p []eventRingItem
+	p []*eventRingItem
 }
 
 type eventRingItem struct {
@@ -24,7 +24,7 @@ type eventRingItem struct {
 func newring(ringLen uint) eventRing {
 	return eventRing{
 		r: make([]*eventRingItem, ringLen),
-		p: make([]eventRingItem, ringLen+1),
+		p: make([]*eventRingItem, ringLen+1),
 	} // 同一节点, 每 ringLen*(ringLen+1) 轮将共用同一 buffer
 }
 
@@ -34,7 +34,7 @@ func (evr *eventRing) processEvent(response []byte, caller APICaller) {
 	defer evr.Unlock()
 	r := evr.c % uintptr(len(evr.r))
 	p := evr.i % uintptr(len(evr.p))
-	evr.p[p] = eventRingItem{
+	evr.p[p] = &eventRingItem{
 		response: response,
 		caller:   caller,
 	}

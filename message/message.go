@@ -35,10 +35,21 @@ type CQCoder interface {
 //
 // CQ码字符转换
 func EscapeCQText(str string) string {
-	str = strings.ReplaceAll(str, "&", "&amp;")
-	str = strings.ReplaceAll(str, "[", "&#91;")
-	str = strings.ReplaceAll(str, "]", "&#93;")
-	return str
+	var buf [512]byte
+	dst := buf[:0]
+	for i := 0; i < len(str); i++ {
+		switch str[i] {
+		case '&':
+			dst = append(dst, '&', 'a', 'm', 'p', ';')
+		case '[':
+			dst = append(dst, '&', '#', '9', '1', ';')
+		case ']':
+			dst = append(dst, '&', '#', '9', '3', ';')
+		default:
+			dst = append(dst, str[i])
+		}
+	}
+	return string(dst)
 }
 
 // UnescapeCQText unescapes special characters in a non-media plain message.
