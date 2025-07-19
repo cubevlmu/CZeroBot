@@ -147,7 +147,9 @@ func (wss *WSServer) any(w http.ResponseWriter, r *http.Request) {
 		selfID: rsp.SelfID,
 	}
 	zero.APICallers.Store(rsp.SelfID, c) // 添加Caller到 APICaller list...
-	wss.hook(rsp.SelfID)
+	if wss.hook != nil {
+		wss.hook(rsp.SelfID)
+	}
 	log.Infof("[wss] connected to websocket server: %s QQ account : %d", wss.URL, rsp.SelfID)
 	wss.caller <- c
 }

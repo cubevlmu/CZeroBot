@@ -28,7 +28,7 @@ func main() {
 			// 正向 WS
 			//driver.NewWebSocketClient("ws://127.0.0.1:6700", ""),
 			// 反向 WS
-			driver.NewWebSocketServer(16, "ws://127.0.0.1:8080", ""),
+			driver.NewWebSocketServer(16, "ws://127.0.0.1:8080", "", nil),
 			// HTTP
 			//driver.NewHTTPClient("http://127.0.0.1:6701", "", "http://127.0.0.1:6700", ""),
 		},
