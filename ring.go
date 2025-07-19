@@ -29,8 +29,6 @@ func newring(ringLen uint) eventRing {
 }
 
 // processEvent 同步向池中放入事件
-//
-//go:nosplit
 func (evr *eventRing) processEvent(response []byte, caller APICaller) {
 	evr.Lock()
 	defer evr.Unlock()
