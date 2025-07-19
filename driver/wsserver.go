@@ -27,6 +27,7 @@ type WSServer struct {
 	AccessToken string
 	lstn        net.Listener
 	caller      chan *WSSCaller
+	hook        ConnectHook
 
 	json.Unmarshaler
 }
@@ -45,12 +46,17 @@ func (wss *WSServer) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// hack
+
+type ConnectHook func(id int64)
+
 // NewWebSocketServer 使用反向WS通信
-func NewWebSocketServer(waitn int, url, accessToken string) *WSServer {
+func NewWebSocketServer(waitn int, url, accessToken string, hook ConnectHook) *WSServer {
 	return &WSServer{
 		URL:         url,
 		AccessToken: accessToken,
 		caller:      make(chan *WSSCaller, waitn),
+		hook:        hook,
 	}
 }
 
@@ -141,6 +147,7 @@ func (wss *WSServer) any(w http.ResponseWriter, r *http.Request) {
 		selfID: rsp.SelfID,
 	}
 	zero.APICallers.Store(rsp.SelfID, c) // 添加Caller到 APICaller list...
+	wss.hook(rsp.SelfID)
 	log.Infof("[wss] connected to websocket server: %s QQ account : %d", wss.URL, rsp.SelfID)
 	wss.caller <- c
 }

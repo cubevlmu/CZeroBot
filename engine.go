@@ -112,7 +112,9 @@ func (e *Engine) OnPrefix(prefix string, rules ...Rule) *Matcher {
 }
 
 // OnSuffix 后缀触发器
-func OnSuffix(suffix string, rules ...Rule) *Matcher { return defaultEngine.OnSuffix(suffix, rules...) }
+func OnSuffix(suffix string, rules ...Rule) *Matcher {
+	return defaultEngine.OnSuffix(suffix, rules...)
+}
 
 // OnSuffix 后缀触发器
 func (e *Engine) OnSuffix(suffix string, rules ...Rule) *Matcher {
